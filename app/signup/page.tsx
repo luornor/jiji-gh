@@ -4,9 +4,7 @@ import SignUpPage from "@/components/Authentication/SignUpPage";
 
 const Register: React.FC = () => {
   return (
-    <div>
       <SignUpPage />
-    </div>
   );
 };
 

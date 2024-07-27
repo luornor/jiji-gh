@@ -3,15 +3,14 @@ import React, { useState, useEffect,ChangeEvent } from 'react';
 import axios from 'axios';
 import AuthButton from '../Common/AuthButton';
 import { useRouter } from 'next/navigation';
-import { Session } from 'next-auth';
+import Link from 'next/link';
 
 
 interface UserProfileProps {
   userId: string;
-  session: Session;
 }
 
-const UserProfile: React.FC<UserProfileProps> = ({userId,session}) => {
+const UserProfile: React.FC<UserProfileProps> = ({userId}) => {
   const [user, setUser] = useState({ username: '', email: '' });
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -30,9 +29,10 @@ const UserProfile: React.FC<UserProfileProps> = ({userId,session}) => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
+        const token = sessionStorage.getItem('token');
         const response = await axios.get(`${baseUrl}/${userId}`,{
           headers: {
-            'Authorization': `Bearer ${session.user?.token}`
+            'Authorization': `Bearer ${token}`
           }
         });
         setMessage(response.data.message as string);
@@ -45,7 +45,7 @@ const UserProfile: React.FC<UserProfileProps> = ({userId,session}) => {
     };
 
     fetchUserData();
-  }, [userId,session.user.token]);
+  }, [userId]);
 
   const handleUserNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -127,6 +127,9 @@ const UserProfile: React.FC<UserProfileProps> = ({userId,session}) => {
           </div>
           <div className="flex items-center justify-center">
             <AuthButton loading={loading} text="Update" action={handleSubmit} />
+            <Link href='/listings'>
+            <button>Cancel</button>
+            </Link>
           </div>
         </form>
       </div>

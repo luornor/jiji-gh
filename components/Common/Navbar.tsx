@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
           <div className="container px-0">
             <nav className="navbar navbar-light bg-white navbar-expand-xl">
               <a href="index.html" className="navbar-brand">
-                <h1 className="text-primary display-6">Fruitables</h1>
+                <h1 className="text-primary display-6">Market</h1>
               </a>
               <button
                 className="navbar-toggler py-2 px-3"
@@ -60,9 +60,6 @@ const Navbar: React.FC = () => {
                   <Link href="/shop" className="nav-item nav-link">
                     Shop
                   </Link>
-                  <Link href="/shop/shop-detail" className="nav-item nav-link">
-                    Shop Detail
-                  </Link>
                   <div className="nav-item dropdown">
                     <a
                       href="#"
@@ -78,17 +75,8 @@ const Navbar: React.FC = () => {
                       <Link href="/checkout" className="dropdown-item">
                         Checkout
                       </Link>
-                      <Link href="/testimonial" className="dropdown-item">
-                        Testimonial
-                      </Link>
-                      <Link href="/404" className="dropdown-item">
-                        404 Page
-                      </Link>
                     </div>
                   </div>
-                  <Link href="./contact" className="nav-item nav-link">
-                    Contact
-                  </Link>
                 </div>
                 <div className="d-flex m-3 me-0">
                   <button

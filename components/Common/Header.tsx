@@ -5,7 +5,7 @@ const Header: React.FC = () => {
     return (
         <head>
         <meta charSet="utf-8" />
-        <title>Fruitables - Vegetable Website Template</title>
+        <title>Ecommerce - Market Place</title>
         <meta content="width=device-width, initial-scale=1.0" name="viewport" />
         <meta content="" name="keywords" />
         <meta content="" name="description" />

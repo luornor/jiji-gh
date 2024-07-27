@@ -143,7 +143,7 @@ const SignupPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gray-400">
       {!passwordError && message && <ErrorMessage message={message}></ErrorMessage>}
       {!passwordError && !message && success && <SuccessMessage message={success}></SuccessMessage>}
 
@@ -182,9 +182,9 @@ const SignupPage: React.FC = () => {
             </select>
 
           </div>
-          <div className="mb-4 relative">
+          <div className="mb-4 details relative">
             <input
-              type="password"
+              type={passwordVisible ? "text" : "password"}
               placeholder='Password'
               value={password}
               onChange={handlePasswordChange}
@@ -199,9 +199,9 @@ const SignupPage: React.FC = () => {
                 {passwordVisible ? <IoEyeOff /> : <IoEye />}
             </span>
           </div>
-          <div className="mb-6 relative">
+          <div className="mb-6 details relative">
             <input
-              type="password"
+              type={passwordVisible ? "text" : "password"}
               placeholder='Confirm Password'
               value={confirmPassword}
               onChange={handleConfirmPasswordChange}

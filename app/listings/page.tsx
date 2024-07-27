@@ -4,18 +4,41 @@ import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
 import Navbar from "@/components/Common/Navbar";
 import SpinnerComponent from "@/components/Common/SpinnerComponent";
+import ListingCard from "@/components/Listing/ListingCard";
+import { Listing } from "@/types/ListingType";
+import { useGetAllListingsQuery } from "../../redux/getAllListingApi";
+import ErrorMessage from "@/components/Common/ErrorMessage";
 
-const shopPage: React.FC=()=> {
+
+const ListingsPage: React.FC=()=> {
     const [Loading, setLoading] = useState(true);
+    const [domLoad, setDomLoad] = useState(false);
+    const [listings, setListings] = useState<any>([]);
+    const { data, error, isLoading } = useGetAllListingsQuery();
+
+
 
     useEffect(() => {
         setTimeout(() => {
-            setLoading(false);
+          setDomLoad(true);
+          setLoading(false);
         }, 3000);
-    }, []);
-    return(
-        <html lang="en">
+    
+        if (data) {
+          console.log("API Data:", data);
+          setListings(data);
+        }
+    
+        if (error) {
+          console.error("API Error:", error);
+        }
+      }, [data, error]);
+    
 
+    return(
+        <>
+        {domLoad && (
+        <html lang="en">
         <Header/>
         <body>
             {/* 0Spinner Start  */}
@@ -32,15 +55,14 @@ const shopPage: React.FC=()=> {
     
             {/* <!-- Single Page Header start --> */}
             <div className="container-fluid page-header py-5">
-                <h1 className="text-center text-white display-6">Shop</h1>
+                <h1 className="text-center text-white display-6">Products We Have</h1>
             </div>
             {/* <!-- Single Page Header End --> */}
-    
     
             {/* <!-- Fruits Shop Start--> */}
             <div className="container-fluid fruite py-5">
                 <div className="container py-5">
-                    <h1 className="mb-4">Fresh fruits shop</h1>
+                    <h1 className="mb-4">Quality items at Your Display</h1>
                     <div className="row g-4">
                         <div className="col-lg-12">
                             <div className="row g-4">
@@ -208,152 +230,24 @@ const shopPage: React.FC=()=> {
                                         </div>
                                     </div>
                                 </div>
+                                {/* Listing cards start */}
                                 <div className="col-lg-9">
                                     <div className="row g-4 justify-content-center">
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-5.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Grapes</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
+                                        {/* single card start */}
+                                        {isLoading ? (
+                                            <div>Loading...</div>
+                                            ) : error ? (
+                                            <ErrorMessage message="Error fetching listings" />
+                                            ) : (
+                                            <div className="flex flex-wrap justify-center gap-[40px]">
+                                                {listings.map((listing: Listing) => (
+                                                <ListingCard key={listing.id} item={listing} />
+                                                ))}
                                             </div>
+                                            )}
                                         </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-5.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Grapes</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-2.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Raspberries</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-4.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Apricots</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-3.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Banana</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-1.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Oranges</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-2.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Raspberries</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-5.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Grapes</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6 col-lg-6 col-xl-4">
-                                            <div className="rounded position-relative fruite-item">
-                                                <div className="fruite-img">
-                                                    <img src="./assets/img/fruite-item-1.jpg" className="img-fluid w-100 rounded-top" alt=""/>
-                                                </div>
-                                                <div className="text-white bg-secondary px-3 py-1 rounded position-absolute" style={{top: '10px', left: "10px"}}>Fruits</div>
-                                                <div className="p-4 border border-secondary border-top-0 rounded-bottom">
-                                                    <h4>Oranges</h4>
-                                                    <p>Lorem ipsum dolor sit amet consectetur adipisicing elit sed do eiusmod te incididunt</p>
-                                                    <div className="d-flex justify-content-between flex-lg-wrap">
-                                                        <p className="text-dark fs-5 fw-bold mb-0">$4.99 / kg</p>
-                                                        <a href="#" className="btn border border-secondary rounded-pill px-3 text-primary"><i className="fa fa-shopping-bag me-2 text-primary"></i> Add to cart</a>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        {/* single card end */}
+                      
                                         <div className="col-12">
                                             <div className="pagination d-flex justify-content-center mt-5">
                                                 <a href="#" className="rounded">&laquo;</a>
@@ -368,10 +262,10 @@ const shopPage: React.FC=()=> {
                                         </div>
                                     </div>
                                 </div>
+                                {/* Listing cards end */}
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
             {/* <!-- Fruits Shop End--> */}
 
@@ -380,9 +274,10 @@ const shopPage: React.FC=()=> {
             {/* footer end */}
     
         </body>
-    
-    </html>
-    )
-}
+        </html>
+    )}
+    </>
+    );
+};
 
-export default shopPage;
+export default ListingsPage;

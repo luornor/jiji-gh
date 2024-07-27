@@ -1,18 +1,17 @@
 "use client";
-import React,{useState,useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
 import Navbar from "@/components/Common/Navbar";
 import SpinnerComponent from "@/components/Common/SpinnerComponent";
 
-
 const ListingDetail: React.FC = () => {
   const [Loading, setLoading] = useState(true);
 
   useEffect(() => {
-      setTimeout(() => {
-          setLoading(false);
-      }, 3000);
+    setTimeout(() => {
+      setLoading(false);
+    }, 3000);
   }, []);
 
   return (
@@ -20,9 +19,7 @@ const ListingDetail: React.FC = () => {
       <Header />
       <body>
         {/* 0Spinner Start  */}
-        {Loading &&
-          <SpinnerComponent/>
-         }
+        {Loading && <SpinnerComponent />}
         {/* Spinner End  */}
 
         {/* Navbar start and Modal Search Start  */}
