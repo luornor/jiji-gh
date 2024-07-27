@@ -3,11 +3,11 @@ import React from "react";
 import ListingDetail from "@/components/Listing/ListingDetail";
 
 
-const ShopDetail: React.FC = () => {
+const ListingPage: React.FC = () => {
 
   return (
       <ListingDetail />
   );
 };
 
-export default ShopDetail;
+export default ListingPage;

@@ -1,10 +1,5 @@
 "use client";
-import React, {
-  useState,
-  ChangeEvent,
-  FormEvent,
-  useRef,
-} from "react";
+import React, { useState, ChangeEvent, FormEvent, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import ErrorMessage from "../Common/ErrorMessage";
@@ -60,7 +55,7 @@ const LoginPage: React.FC = () => {
       const response = await axios.post(loginUrl, user);
 
       const token = response.data.token;
-      console.log(token)
+      console.log(token);
       sessionStorage.setItem("token", token);
 
       setSuccessMessage("Login successful. Redirecting...");
@@ -89,58 +84,55 @@ const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-400">
+    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
       {error && !emailError && <ErrorMessage message={error}></ErrorMessage>}
       {!error && !emailError && successMessage && (
         <SuccessMessage message={successMessage}></SuccessMessage>
       )}
 
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Login</h2>
+      <div className="card p-4 shadow-lg">
+        <h2 className="card-title text-center text-primary">Login</h2>
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Email</label>
+          <div className="mb-3">
+            <label className="form-label">Email</label>
             <input
               type="email"
               placeholder="user@example.com"
               value={email}
               onChange={handleEmailChange}
-              className={`w-full px-3 text-black py-2 bg-gray-200 rounded-lg ${
-                emailError ? "border-red-500" : "border"
-              } focus:outline-none focus:border-blue-500`}
+              className={`form-control ${emailError ? "is-invalid" : ""}`}
             />
             {emailError && (
-              <p className="text-red-500 font-nunito text-sm  mt-1">
-                {emailError}
-              </p>
+              <div className="invalid-feedback">{emailError}</div>
             )}
           </div>
-          <div className="mb-6 details relative">
+          <div className="mb-3 position-relative">
+            <label className="form-label">Password</label>
             <input
               type={passwordVisible ? "text" : "password"}
-              placeholder='Password'
+              placeholder="Password"
               value={password}
               onChange={handlePasswordChange}
-              className="w-full px-3 py-2 text-black bg-gray-200 rounded-lg border focus:outline-none focus:border-blue-500"
+              className="form-control"
             />
             <span
-                className="absolute font-nunito text-gray-700 top-1/2 right-4 transform -translate-y-1/2 cursor-pointer text-md text-eye"
-                role="button"
-                aria-label={passwordVisible ? "Hide password" : "Show password"}
-                onClick={togglePasswordVisibility}
-              >
-                {passwordVisible ? <IoEyeOff /> : <IoEye />}
+              className="position-absolute top-50 end-0  pe-3"
+              role="button"
+              aria-label={passwordVisible ? "Hide password" : "Show password"}
+              onClick={togglePasswordVisibility}
+            >
+              {passwordVisible ? <IoEyeOff /> : <IoEye />}
             </span>
           </div>
-          <div className="flex items-center justify-center mb-3">
+          <div className="d-flex justify-content-center mb-3">
             <AuthButton loading={loading} text="Login" action={handleSubmit} />
           </div>
-          <span className="flex text-md items-center justify-center">
-            <p className="text-black">Don't Have an Account? </p>{" "}
-            <Link className="text-blue-500 b-2 border-blue-500" href="/signup ">
+          <div className="d-flex justify-content-center">
+            <p className="me-2">Don't Have an Account?</p>
+            <Link href="/signup" className="text-primary">
               Signup Here
             </Link>
-          </span>
+          </div>
         </form>
       </div>
     </div>

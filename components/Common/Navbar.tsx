@@ -38,7 +38,7 @@ const Navbar: React.FC = () => {
           </div>
           <div className="container px-0">
             <nav className="navbar navbar-light bg-white navbar-expand-xl">
-              <a href="index.html" className="navbar-brand">
+              <a href="/listings" className="navbar-brand">
                 <h1 className="text-primary display-6">Market</h1>
               </a>
               <button
@@ -57,7 +57,7 @@ const Navbar: React.FC = () => {
                   <Link href="/" className="nav-item nav-link active">
                     Home
                   </Link>
-                  <Link href="/shop" className="nav-item nav-link">
+                  <Link href={`/shops/${1}`} className="nav-item nav-link">
                     Shop
                   </Link>
                   <div className="nav-item dropdown">
@@ -100,9 +100,9 @@ const Navbar: React.FC = () => {
                       3
                     </span>
                   </Link>
-                  <a href="#" className="my-auto">
+                  <Link href={`/profile/${18}`} className="my-auto">
                     <i className="fas fa-user fa-2x"></i>
-                  </a>
+                  </Link>
                 </div>
               </div>
             </nav>

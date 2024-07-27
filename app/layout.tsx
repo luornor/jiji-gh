@@ -1,9 +1,8 @@
 "use client";
 
 import { Inter } from "next/font/google";
-import "./globals.css";
 import { PublicEnvScript } from "next-runtime-env";
-
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { Provider as StoreProvider } from "react-redux";
 import { store } from "@/redux/store";
 

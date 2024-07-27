@@ -9,13 +9,13 @@ interface Props {
 
 const AuthButton: React.FC<Props> = ({ loading, action, text }) => {
   return (
-    <div className="w-4/12 md:w-3/12">
+    <div className="col-6 col-md-4">
       <button
         type="submit"
-        className="w-full h-8 font-nunito font-normal bg-blue-500 hover:bg-blue-700 rounded-full text-white text-md"
+        className="btn btn-primary w-100"
         onClick={action}
       >
-        {loading ? <Spinner /> : `${text}`}
+        {loading ? <Spinner /> : text}
       </button>
     </div>
   );

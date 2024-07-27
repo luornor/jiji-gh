@@ -1,41 +1,37 @@
 "use client";
-import React, { useState, useEffect,ChangeEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import axios from 'axios';
 import AuthButton from '../Common/AuthButton';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import Link from 'next/link';
 
+const UserProfile: React.FC = () => {
+  const params = useParams<{ id: string }>();
 
-interface UserProfileProps {
-  userId: string;
-}
-
-const UserProfile: React.FC<UserProfileProps> = ({userId}) => {
   const [user, setUser] = useState({ username: '', email: '' });
   const [username, setUsername] = useState<string>('');
   const [email, setEmail] = useState<string>('');
-  const [emailError, setEmailError] = useState<string>("");
-
+  const [emailError, setEmailError] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
-  const [message, setMessage] = useState("");
-  const [success, setSuccess] = useState("");
+  const [message, setMessage] = useState('');
+  const [success, setSuccess] = useState('');
 
   const router = useRouter();
+  const baseUrl = `${process.env.NEXT_PUBLIC_BASE_URL}auth/users`;
 
-
-  const baseUrl = `${process.env.NEXT_PUBLIC_BASE_URL}auth/users`; // Corrected environment variable access
-  
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         setLoading(true);
         const token = sessionStorage.getItem('token');
-        const response = await axios.get(`${baseUrl}/${userId}`,{
+        const response = await axios.get(`${baseUrl}/${params.id}/`, {
           headers: {
-            'Authorization': `Bearer ${token}`
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
-        setMessage(response.data.message as string);
+        setUser(response.data);
+        setUsername(response.data.username);
+        setEmail(response.data.email);
         setLoading(false);
       } catch (error) {
         console.error('Failed to fetch user data:', error);
@@ -43,9 +39,8 @@ const UserProfile: React.FC<UserProfileProps> = ({userId}) => {
         setLoading(false);
       }
     };
-
     fetchUserData();
-  }, [userId]);
+  }, [params.id]);
 
   const handleUserNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setUsername(e.target.value);
@@ -61,9 +56,9 @@ const UserProfile: React.FC<UserProfileProps> = ({userId}) => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
-      setEmailError("Invalid email address");
+      setEmailError('Invalid email address');
     } else {
-      setEmailError("");
+      setEmailError('');
     }
 
     setUser((prevUser) => ({
@@ -76,62 +71,62 @@ const UserProfile: React.FC<UserProfileProps> = ({userId}) => {
     e.preventDefault();
     try {
       setLoading(true);
-      const res = await axios.put(`${baseUrl}/${userId}`, user); // Adjust the URL as needed
+      const res = await axios.put(`${baseUrl}/${params.id}/`, user);
       setSuccess(res.data.message);
-      setMessage("");
+      setMessage('');
       setLoading(false);
-      router.push('/login');
-
-      // Handle successful update (e.g., show a success message)
+      router.push('/listings');
     } catch (error) {
       if (axios.isAxiosError(error) && error.response) {
-        setMessage(error.response.data.message || "An unexpected error occurred.");
+        setMessage(error.response.data.message || 'An unexpected error occurred.');
       } else {
-        setMessage("An error occurred. Please try again later.");
+        setMessage('An error occurred. Please try again later.');
       }
-      // Clear the message after 5 seconds
       setTimeout(() => {
-        setMessage("");
+        setMessage('');
       }, 5000);
     } finally {
-      setLoading(false); // Ensure loading is set to false in both success and error cases
+      setLoading(false);
     }
-      // Handle error (e.g., show an error message)
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center text-black">Manage Your Details</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-800">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={email}
-              onChange={handleEmailChange}
-              className="w-full px-3 py-2 border bg-gray-200 rounded-lg focus:outline-none focus:border-blue-500"
-            />
-          </div>
-          <div className="mb-4">
-            <label className="block text-gray-800">Username</label>
-            <input
-              type="text"
-              name="username"
-              value={username}
-              onChange={handleUserNameChange}
-              className="w-full px-3 py-2 border rounded-lg bg-gray-200 focus:outline-none focus:border-blue-500"
-            />
-          </div>
-          <div className="flex items-center justify-center">
-            <AuthButton loading={loading} text="Update" action={handleSubmit} />
-            <Link href='/listings'>
-            <button>Cancel</button>
-            </Link>
-          </div>
-        </form>
+    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+      <div className="card shadow-lg p-3 mb-5 bg-white rounded" style={{ maxWidth: '500px', width: '100%' }}>
+        <div className="card-body">
+          <h2 className="card-title text-center">Manage Your Details</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="mb-3">
+              <label className="form-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={email}
+                onChange={handleEmailChange}
+                className="form-control"
+              />
+              {emailError && <div className="text-danger">{emailError}</div>}
+            </div>
+            <div className="mb-3">
+              <label className="form-label">Username</label>
+              <input
+                type="text"
+                name="username"
+                value={username}
+                onChange={handleUserNameChange}
+                className="form-control"
+              />
+            </div>
+            <div className="d-flex justify-content-between align-items-center">
+              <AuthButton loading={loading} text="Update" action={handleSubmit} />
+              <Link href="/listings">
+                <button type="button" className="btn btn-secondary ms-3">Cancel</button>
+              </Link>
+            </div>
+          </form>
+          {message && <div className="alert alert-danger mt-3">{message}</div>}
+          {success && <div className="alert alert-success mt-3">{success}</div>}
+        </div>
       </div>
     </div>
   );

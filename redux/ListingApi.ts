@@ -1,8 +1,8 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { Listing } from "@/types/ListingType";
 
-export const getAllListingApi = createApi({
-  reducerPath: "getAllListingApi",
+export const ListingApi = createApi({
+  reducerPath: "ListingApi",
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_BASE_URL, 
     prepareHeaders: (headers, { getState }) => {
@@ -21,7 +21,13 @@ export const getAllListingApi = createApi({
         method: 'GET',
       }),
     }),
+    getListingById: builder.query<Listing[], { listingId: string }>({
+      query: (queryArg) => ({
+        url: `listings/${queryArg.listingId}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useGetAllListingsQuery } = getAllListingApi;
+export const { useGetAllListingsQuery,useGetListingByIdQuery } = ListingApi;

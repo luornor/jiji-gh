@@ -6,8 +6,9 @@ import Navbar from "@/components/Common/Navbar";
 import SpinnerComponent from "@/components/Common/SpinnerComponent";
 import ListingCard from "@/components/Listing/ListingCard";
 import { Listing } from "@/types/ListingType";
-import { useGetAllListingsQuery } from "../../redux/getAllListingApi";
+import { useGetAllListingsQuery } from "../../redux/ListingApi";
 import ErrorMessage from "@/components/Common/ErrorMessage";
+import Link from "next/link"
 
 
 const ListingsPage: React.FC=()=> {
@@ -241,7 +242,11 @@ const ListingsPage: React.FC=()=> {
                                             ) : (
                                             <div className="flex flex-wrap justify-center gap-[40px]">
                                                 {listings.map((listing: Listing) => (
+                                                <Link key={listing.id} href={`/listings/${listing.id}`}>
+
                                                 <ListingCard key={listing.id} item={listing} />
+
+                                                </Link>
                                                 ))}
                                             </div>
                                             )}

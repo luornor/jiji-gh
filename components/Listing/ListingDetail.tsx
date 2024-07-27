@@ -4,15 +4,39 @@ import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
 import Navbar from "@/components/Common/Navbar";
 import SpinnerComponent from "@/components/Common/SpinnerComponent";
+import { useGetListingByIdQuery } from "../../redux/ListingApi";
+
+import { useParams } from "next/navigation";
 
 const ListingDetail: React.FC = () => {
   const [Loading, setLoading] = useState(true);
+  const params = useParams<{ id: string }>();
+  const { data, error, isLoading } = useGetListingByIdQuery({ listingId: params.id });
+
+  const [listingData, setListingData] = useState<any>({});
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 3000);
-  }, []);
+
+    if (data) {
+      console.log(data);
+      setListingData(data);
+    }
+  }, [data]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error loading Listing data.</div>;
+  }
+
+  if (!data) {
+    return <div>No blog data found.</div>;
+  }
 
   return (
     <html lang="en">
@@ -28,7 +52,7 @@ const ListingDetail: React.FC = () => {
 
         {/* Single Page Header start*/}
         <div className="container-fluid page-header py-5">
-          <h1 className="text-center text-white display-6">Shop Detail</h1>
+          <h1 className="text-center text-white display-6">Listing Detail</h1>
         </div>
         {/* Single Page Header End  */}
 
@@ -42,7 +66,7 @@ const ListingDetail: React.FC = () => {
                     <div className="border rounded">
                       <a href="#">
                         <img
-                          src="/assets/img/single-item.jpg"
+                          src={listingData.image_url}
                           className="img-fluid rounded"
                           alt="Image"
                         />
@@ -50,9 +74,9 @@ const ListingDetail: React.FC = () => {
                     </div>
                   </div>
                   <div className="col-lg-6">
-                    <h4 className="fw-bold mb-3">Brocoli</h4>
-                    <p className="mb-3">Category: Vegetables</p>
-                    <h5 className="fw-bold mb-3">3,35 $</h5>
+                    <h4 className="fw-bold mb-3">{listingData.title}</h4>
+                    <p className="mb-3">Category: {listingData.category}</p>
+                    <h5 className="fw-bold mb-3">{listingData.price} $</h5>
                     <div className="d-flex mb-4">
                       <i className="fa fa-star text-secondary"></i>
                       <i className="fa fa-star text-secondary"></i>
@@ -61,15 +85,9 @@ const ListingDetail: React.FC = () => {
                       <i className="fa fa-star"></i>
                     </div>
                     <p className="mb-4">
-                      The generated Lorem Ipsum is therefore always free from
-                      repetition injected humour, or non-characteristic words
-                      etc.
+                      {listingData.description}
                     </p>
-                    <p className="mb-4">
-                      Susp endisse ultricies nisi vel quam suscipit. Sabertooth
-                      peacock flounder; chain pickerel hatchetfish, pencilfish
-                      snailfish
-                    </p>
+                    <p>Quantity</p>
                     <div
                       className="input-group quantity mb-5"
                       style={{ width: "100px" }}
@@ -135,18 +153,10 @@ const ListingDetail: React.FC = () => {
                         aria-labelledby="nav-about-tab"
                       >
                         <p>
-                          The generated Lorem Ipsum is therefore always free
-                          from repetition injected humour, or non-characteristic
-                          words etc. Susp endisse ultricies nisi vel quam
-                          suscipit{" "}
+                          {listingData.description}
                         </p>
-                        <p>
-                          Sabertooth peacock flounder; chain pickerel
-                          hatchetfish, pencilfish snailfish filefish Antarctic
-                          icefish goldeye aholehole trumpetfish pilot fish
-                          airbreathing catfish, electric ray sweeper.
-                        </p>
-                        <div className="px-2">
+                    
+                        {/* <div className="px-2">
                           <div className="row g-4">
                             <div className="col-6">
                               <div className="row bg-light align-items-center text-center justify-content-center py-2">
@@ -191,84 +201,9 @@ const ListingDetail: React.FC = () => {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
-                      <div
-                        className="tab-pane"
-                        id="nav-mission"
-                        role="tabpanel"
-                        aria-labelledby="nav-mission-tab"
-                      >
-                        <div className="d-flex">
-                          <img
-                            src="/assets/img/avatar.jpg"
-                            className="img-fluid rounded-circle p-3"
-                            style={{ width: "100px", height: "100px" }}
-                            alt=""
-                          />
-                          <div className="">
-                            <p className="mb-2" style={{ fontSize: "14px" }}>
-                              April 12, 2024
-                            </p>
-                            <div className="d-flex justify-content-between">
-                              <h5>Jason Smith</h5>
-                              <div className="d-flex mb-3">
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star"></i>
-                              </div>
-                            </div>
-                            <p>
-                              The generated Lorem Ipsum is therefore always free
-                              from repetition injected humour, or
-                              non-characteristic words etc. Susp endisse
-                              ultricies nisi vel quam suscipit{" "}
-                            </p>
-                          </div>
-                        </div>
-                        <div className="d-flex">
-                          <img
-                            src="/assets/img/avatar.jpg"
-                            className="img-fluid rounded-circle p-3"
-                            style={{ width: "100px", height: "100px" }}
-                            alt=""
-                          />
-                          <div className="">
-                            <p className="mb-2" style={{ fontSize: "14px" }}>
-                              April 12, 2024
-                            </p>
-                            <div className="d-flex justify-content-between">
-                              <h5>Sam Peters</h5>
-                              <div className="d-flex mb-3">
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star text-secondary"></i>
-                                <i className="fa fa-star"></i>
-                                <i className="fa fa-star"></i>
-                              </div>
-                            </div>
-                            <p className="text-dark">
-                              The generated Lorem Ipsum is therefore always free
-                              from repetition injected humour, or
-                              non-characteristic words etc. Susp endisse
-                              ultricies nisi vel quam suscipit{" "}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="tab-pane" id="nav-vision" role="tabpanel">
-                        <p className="text-dark">
-                          Tempor erat elitr rebum at clita. Diam dolor diam
-                          ipsum et tempor sit. Aliqu diam amet diam et eos
-                          labore. 3
-                        </p>
-                        <p className="mb-0">
-                          Diam dolor diam ipsum et tempor sit. Aliqu diam amet
-                          diam et eos labore. Clita erat ipsum et lorem et sit
-                        </p>
-                      </div>
+                      
                     </div>
                   </div>
                   <form action="#">
@@ -331,529 +266,6 @@ const ListingDetail: React.FC = () => {
                       </div>
                     </div>
                   </form>
-                </div>
-              </div>
-              <div className="col-lg-4 col-xl-3">
-                <div className="row g-4 fruite">
-                  <div className="col-lg-12">
-                    <div className="input-group w-100 mx-auto d-flex mb-4">
-                      <input
-                        type="search"
-                        className="form-control p-3"
-                        placeholder="keywords"
-                        aria-describedby="search-icon-1"
-                      />
-                      <span id="search-icon-1" className="input-group-text p-3">
-                        <i className="fa fa-search"></i>
-                      </span>
-                    </div>
-                    <div className="mb-4">
-                      <h4>Categories</h4>
-                      <ul className="list-unstyled fruite-categorie">
-                        <li>
-                          <div className="d-flex justify-content-between fruite-name">
-                            <a href="#">
-                              <i className="fas fa-apple-alt me-2"></i>Apples
-                            </a>
-                            <span>(3)</span>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="d-flex justify-content-between fruite-name">
-                            <a href="#">
-                              <i className="fas fa-apple-alt me-2"></i>Oranges
-                            </a>
-                            <span>(5)</span>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="d-flex justify-content-between fruite-name">
-                            <a href="#">
-                              <i className="fas fa-apple-alt me-2"></i>Strawbery
-                            </a>
-                            <span>(2)</span>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="d-flex justify-content-between fruite-name">
-                            <a href="#">
-                              <i className="fas fa-apple-alt me-2"></i>Banana
-                            </a>
-                            <span>(8)</span>
-                          </div>
-                        </li>
-                        <li>
-                          <div className="d-flex justify-content-between fruite-name">
-                            <a href="#">
-                              <i className="fas fa-apple-alt me-2"></i>Pumpkin
-                            </a>
-                            <span>(5)</span>
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                    <h4 className="mb-4">Featured products</h4>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <div
-                        className="rounded"
-                        style={{ width: "100px", height: "100px" }}
-                      >
-                        <img
-                          src="/assets/img/featur-1.jpg"
-                          className="img-fluid rounded"
-                          alt="Image"
-                        />
-                      </div>
-                      <div>
-                        <h6 className="mb-2">Big Banana</h6>
-                        <div className="d-flex mb-2">
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-                        <div className="d-flex mb-2">
-                          <h5 className="fw-bold me-2">2.99 $</h5>
-                          <h5 className="text-danger text-decoration-line-through">
-                            4.11 $
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <div
-                        className="rounded"
-                        style={{ width: "100px", height: "100px" }}
-                      >
-                        <img
-                          src="/assets/img/featur-2.jpg"
-                          className="img-fluid rounded"
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <h6 className="mb-2">Big Banana</h6>
-                        <div className="d-flex mb-2">
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-                        <div className="d-flex mb-2">
-                          <h5 className="fw-bold me-2">2.99 $</h5>
-                          <h5 className="text-danger text-decoration-line-through">
-                            4.11 $
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <div
-                        className="rounded"
-                        style={{ width: "100px", height: "100px" }}
-                      >
-                        <img
-                          src="/assets/img/featur-3.jpg"
-                          className="img-fluid rounded"
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <h6 className="mb-2">Big Banana</h6>
-                        <div className="d-flex mb-2">
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-                        <div className="d-flex mb-2">
-                          <h5 className="fw-bold me-2">2.99 $</h5>
-                          <h5 className="text-danger text-decoration-line-through">
-                            4.11 $
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <div
-                        className="rounded me-4"
-                        style={{ width: "100px", height: "100px" }}
-                      >
-                        <img
-                          src="/assets/img/vegetable-item-4.jpg"
-                          className="img-fluid rounded"
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <h6 className="mb-2">Big Banana</h6>
-                        <div className="d-flex mb-2">
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-                        <div className="d-flex mb-2">
-                          <h5 className="fw-bold me-2">2.99 $</h5>
-                          <h5 className="text-danger text-decoration-line-through">
-                            4.11 $
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <div
-                        className="rounded me-4"
-                        style={{ width: "100px", height: "100px" }}
-                      >
-                        <img
-                          src="/assets/img/vegetable-item-5.jpg"
-                          className="img-fluid rounded"
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <h6 className="mb-2">Big Banana</h6>
-                        <div className="d-flex mb-2">
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-                        <div className="d-flex mb-2">
-                          <h5 className="fw-bold me-2">2.99 $</h5>
-                          <h5 className="text-danger text-decoration-line-through">
-                            4.11 $
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex align-items-center justify-content-start">
-                      <div
-                        className="rounded me-4"
-                        style={{ width: "100px", height: "100px" }}
-                      >
-                        <img
-                          src="/assets/img/vegetable-item-6.jpg"
-                          className="img-fluid rounded"
-                          alt=""
-                        />
-                      </div>
-                      <div>
-                        <h6 className="mb-2">Big Banana</h6>
-                        <div className="d-flex mb-2">
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star text-secondary"></i>
-                          <i className="fa fa-star"></i>
-                        </div>
-                        <div className="d-flex mb-2">
-                          <h5 className="fw-bold me-2">2.99 $</h5>
-                          <h5 className="text-danger text-decoration-line-through">
-                            4.11 $
-                          </h5>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="d-flex justify-content-center my-4">
-                      <a
-                        href="#"
-                        className="btn border border-secondary px-4 py-3 rounded-pill text-primary w-100"
-                      >
-                        Vew More
-                      </a>
-                    </div>
-                  </div>
-                  <div className="col-lg-12">
-                    <div className="position-relative">
-                      <img
-                        src="/assets/img/banner-fruits.jpg"
-                        className="img-fluid w-100 rounded"
-                        alt=""
-                      />
-                      <div
-                        className="position-absolute"
-                        style={{
-                          top: "50%",
-                          right: "10px",
-                          transform: "translateY(-50%)",
-                        }}
-                      >
-                        <h3 className="text-secondary fw-bold">
-                          Fresh <br /> Fruits <br /> Banner
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <h1 className="fw-bold mb-0">Related products</h1>
-            <div className="vesitable">
-              <div className="owl-carousel vegetable-carousel justify-content-center">
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-6.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Parsely</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$4.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-1.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Parsely</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$4.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-3.png"
-                      className="img-fluid w-100 rounded-top bg-light"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Banana</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$7.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-4.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Bell Papper</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$7.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-5.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Potatoes</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$7.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-6.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Parsely</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$7.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-5.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Potatoes</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$7.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
-                </div>
-                <div className="border border-primary rounded position-relative vesitable-item">
-                  <div className="vesitable-img">
-                    <img
-                      src="/assets/img/vegetable-item-6.jpg"
-                      className="img-fluid w-100 rounded-top"
-                      alt=""
-                    />
-                  </div>
-                  <div
-                    className="text-white bg-primary px-3 py-1 rounded position-absolute"
-                    style={{ top: "10px", right: "10px" }}
-                  >
-                    Vegetable
-                  </div>
-                  <div className="p-4 pb-0 rounded-bottom">
-                    <h4>Parsely</h4>
-                    <p>
-                      Lorem ipsum dolor sit amet consectetur adipisicing elit
-                      sed do eiusmod te incididunt
-                    </p>
-                    <div className="d-flex justify-content-between flex-lg-wrap">
-                      <p className="text-dark fs-5 fw-bold">$7.99 / kg</p>
-                      <a
-                        href="#"
-                        className="btn border border-secondary rounded-pill px-3 py-1 mb-4 text-primary"
-                      >
-                        <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
-                        Add to cart
-                      </a>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

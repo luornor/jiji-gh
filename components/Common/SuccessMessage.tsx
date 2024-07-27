@@ -7,15 +7,15 @@ interface SuccessMessageProps {
 
 const SuccessMessage: React.FC<SuccessMessageProps> = ({ message }) => {
   return (
-    <div className="fixed top-5 right-auto bg-green-100 text-green-700 px-4 py-3 rounded flex items-center shadow-lg animate-slide-in z-50">
+    <div className="fixed top-5 start-50 translate-middle-x bg-success text-white px-4 py-3 rounded d-flex align-items-center shadow-lg animate-slide-in z-50">
       <Image
         src="/SuccessIcon.svg"
         width={20}
         height={20}
-        className="rounded-lg mr-2"
-        alt="error icon"
+        className="rounded-lg me-2"
+        alt="success icon"
       />
-      <span className="block sm:inline">{message}</span>
+      <span className="d-block">{message}</span>
     </div>
   );
 };
