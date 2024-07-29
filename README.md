@@ -1,4 +1,4 @@
-# Next.js Project
+# Next.js Ecormmerce Project
 
 This is a Next.js project that provides a server-side rendered React application.
 
