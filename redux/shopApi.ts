@@ -21,14 +21,11 @@ export const shopApi = createApi({
         method: 'GET',
       }),
     }),
-    addShopListings: builder.mutation<any, {shopId: string; title: string; body: string; }>({
+    addShopListings: builder.mutation<any, Partial<Listing> & { shopId: string }>({
       query: (queryArg) => ({
-        url: `shops/${queryArg.shopId}`,
+        url: `shops/${queryArg.shopId}/`,
         method: "POST",
-        body: {
-          title: queryArg.title,
-          body: queryArg.body,
-        },
+        body: queryArg,
       }),
     }),
   }),

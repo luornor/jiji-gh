@@ -86,7 +86,7 @@ const Navbar: React.FC = () => {
                   >
                     <i className="fas fa-search text-primary"></i>
                   </button>
-                  <Link href="./cart" className="position-relative me-4 my-auto">
+                  <Link href="/cart" className="position-relative me-4 my-auto">
                     <i className="fa fa-shopping-bag fa-2x"></i>
                     <span
                       className="position-absolute bg-secondary rounded-circle d-flex align-items-center justify-content-center text-dark px-1"

@@ -1,42 +1,163 @@
-// components/shop/CreateEditListing.tsx
-import React, { useState } from 'react';
+"use client";
+import React, { useState, useEffect } from "react";
+import Header from "@/components/Common/Header";
+import Footer from "@/components/Common/Footer";
+import Navbar from "@/components/Common/Navbar";
+import { useAddShopListingsMutation } from "../../redux/shopApi";
+import { useParams } from "next/navigation";
+import AuthButton from "../Common/AuthButton";
+import SuccessMessage from "../Common/SuccessMessage";
+import ErrorMessage from "../Common/ErrorMessage";
+import { useRouter } from "next/navigation";
+
+
 
 const CreateListing: React.FC = () => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
+  const [title, setTitle] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [quantity, setQuantity] = useState<number>(1);
+  const [category, setCategory] = useState<string>("");
+  const [imageUrl, setImageUrl] = useState<string>("");
+  const [addShopListings, { isLoading, error, isSuccess }] = useAddShopListingsMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState("");
+  const router = useRouter();
+
+
+  const params = useParams<{ id: string }>();
+  
+  const categoryChoices = [
+    "electronics",
+    "fashion",
+    "home",
+    "beauty",
+    "books",
+    "toys",
+    "other",
+  ];
+
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle create/edit listing logic here
+    setLoading(true)
+    try {
+      const res = await addShopListings({
+        shopId: params.id,
+        title,
+        description,
+        price,
+        quantity,
+        category,
+        image_url: imageUrl,
+      }).unwrap();
+      setSuccess(res.data.message);
+      router.push(`/shops/${params.id}`);
+    } catch (error) {
+      // Handle errors (e.g., show an error message)
+      console.error("Failed to create listing:", error);
+    }
+    finally{
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold mb-6 text-center">Create/Edit Listing</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700">Title</label>
-            <input
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-            />
+    <div lang="en">
+      <Header />
+        <>
+          <Navbar />
+          <div className="container-fluid page-header py-5">
+            <h1 className="text-center text-white display-6">Add New Listing</h1>
           </div>
-          <div className="mb-6">
-            <label className="block text-gray-700">Description</label>
-            <textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
-            />
+          <div className="container py-5">
+          {isSuccess && success && <SuccessMessage message={success}></SuccessMessage>}
+          {error && <ErrorMessage message="Error creating listing"></ErrorMessage>}
+
+            <div className="card shadow p-5 bg-light rounded">
+              <div className="text-center mx-auto mb-4" style={{ maxWidth: "700px" }}>
+                <h1 className="text-primary">Create a New Listing</h1>
+                <p className="mb-4">
+                  Fill in the details below to add a new listing to your shop.
+                </p>
+              </div>
+              <form onSubmit={handleSubmit} className="items-center justify-center">
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    className="form-control border-0 py-3 bg-gray-200"
+                    placeholder="Title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <textarea
+                    className="form-control border-0 py-3 bg-gray-200"
+                    rows={5}
+                    placeholder="Description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    required
+                  ></textarea>
+                </div>
+                <div className="mb-4">
+                  <input
+                    type="number"
+                    className="form-control border-0 py-3 bg-gray-200"
+                    placeholder="Price"
+                    value={price}
+                    onChange={(e) => setPrice(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <input
+                    type="number"
+                    className="form-control border-0 py-3 bg-gray-200"
+                    placeholder="Quantity"
+                    value={quantity}
+                    onChange={(e) => setQuantity(parseInt(e.target.value))}
+                    required
+                  />
+                </div>
+                <div className="mb-4">
+                  <select
+                    className="form-control border-0 py-3 bg-gray-200"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    <option value="" disabled>
+                      Select Category
+                    </option>
+                    {categoryChoices.map((choice) => (
+                      <option key={choice} value={choice}>
+                        {choice}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mb-4">
+                  <input
+                    type="text"
+                    className="form-control border-0 py-3 bg-gray-200"
+                    placeholder="Image URL"
+                    value={imageUrl}
+                    onChange={(e) => setImageUrl(e.target.value)}
+                  />
+                </div>
+                <div className= "d-flex justify-content-center mb-3">
+                  <AuthButton loading={isLoading} text="Add Listing" action={handleSubmit} />
+                </div>
+              </form>
+            </div>
           </div>
-          <button type="submit" className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">
-            Submit
-          </button>
-        </form>
-      </div>
+          <Footer />
+        </>
+
     </div>
   );
 };

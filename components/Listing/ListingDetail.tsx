@@ -5,15 +5,22 @@ import Footer from "@/components/Common/Footer";
 import Navbar from "@/components/Common/Navbar";
 import SpinnerComponent from "@/components/Common/SpinnerComponent";
 import { useGetListingByIdQuery } from "../../redux/ListingApi";
+import Link from "next/link";
 
-import { useParams } from "next/navigation";
+import { useParams,useRouter } from "next/navigation";
 
 const ListingDetail: React.FC = () => {
   const [Loading, setLoading] = useState(true);
+  const [quantity, setQuantity] = useState(1);
+  const [totalPrice, setTotalPrice] = useState(0);
+
   const params = useParams<{ id: string }>();
   const { data, error, isLoading } = useGetListingByIdQuery({ listingId: params.id });
 
   const [listingData, setListingData] = useState<any>({});
+
+  const router = useRouter();
+
 
   useEffect(() => {
     setTimeout(() => {
@@ -25,6 +32,49 @@ const ListingDetail: React.FC = () => {
       setListingData(data);
     }
   }, [data]);
+
+  const handleAddToCart = async () => {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const response = await fetch(`${baseUrl}/cart/add/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          listing_id: listingData.id,
+          quantity: 1,
+          user_id: 17,
+          price: listingData.price,
+
+        }),
+      });
+    
+      if (response.ok) {
+        // Handle success (e.g., show a success message or update the UI)
+        console.log('Item added to cart successfully');
+        router.push('/cart');
+      } else {
+        // Handle error (e.g., show an error message)
+        console.error('Failed to add item to cart');
+      }
+    } catch (error) {
+      console.error('An error occurred while adding item to cart:', error);
+    }
+  };
+
+  useEffect(() => {
+    if (listingData.price) {
+      setTotalPrice(listingData.price * quantity);
+    }
+  }, [quantity, listingData.price]);
+
+  const handleQuantityChange = (delta: number) => {
+    setQuantity(prevQuantity => {
+      const newQuantity = prevQuantity + delta;
+      return newQuantity > 0 ? newQuantity : 1; // Ensure quantity is at least 1
+    });
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -76,7 +126,7 @@ const ListingDetail: React.FC = () => {
                   <div className="col-lg-6">
                     <h4 className="fw-bold mb-3">{listingData.title}</h4>
                     <p className="mb-3">Category: {listingData.category}</p>
-                    <h5 className="fw-bold mb-3">{listingData.price} $</h5>
+                    <h5 className="fw-bold mb-3">{totalPrice.toFixed(2)} $</h5>
                     <div className="d-flex mb-4">
                       <i className="fa fa-star text-secondary"></i>
                       <i className="fa fa-star text-secondary"></i>
@@ -87,34 +137,39 @@ const ListingDetail: React.FC = () => {
                     <p className="mb-4">
                       {listingData.description}
                     </p>
-                    <p>Quantity</p>
+                    <p className="fw-bold">Quantity</p>
                     <div
                       className="input-group quantity mb-5"
                       style={{ width: "100px" }}
                     >
                       <div className="input-group-btn">
-                        <button className="btn btn-sm btn-minus rounded-circle bg-light border">
+                        <button className="btn btn-sm btn-minus rounded-circle bg-light border"
+                        onClick={() => handleQuantityChange(-1)}
+                        >
                           <i className="fa fa-minus"></i>
                         </button>
                       </div>
                       <input
                         type="text"
                         className="form-control form-control-sm text-center border-0"
-                        value="1"
+                        value={quantity}
+                        readOnly
                       />
                       <div className="input-group-btn">
-                        <button className="btn btn-sm btn-plus rounded-circle bg-light border">
+                        <button className="btn btn-sm btn-plus rounded-circle bg-light border"
+                        onClick={() => handleQuantityChange(1)}
+                        >
                           <i className="fa fa-plus"></i>
                         </button>
                       </div>
                     </div>
-                    <a
-                      href="#"
+                    <button
+                      onClick={handleAddToCart}
                       className="btn border border-secondary rounded-pill px-4 py-2 mb-4 text-primary"
                     >
                       <i className="fa fa-shopping-bag me-2 text-primary"></i>{" "}
                       Add to cart
-                    </a>
+                    </button>
                   </div>
                   <div className="col-lg-12">
                     <nav>

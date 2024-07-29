@@ -4,15 +4,132 @@ import Header from "@/components/Common/Header";
 import Footer from "@/components/Common/Footer";
 import Navbar from "@/components/Common/Navbar";
 import SpinnerComponent from "@/components/Common/SpinnerComponent";
+import GoogleMapComponent from "@/components/Listing/GoogleMapComponent";
+import axios from "axios";
+import SuccessMessage from "@/components/Common/SuccessMessage";
+import { useRouter } from "next/navigation";
 
 const Checkout: React.FC = () => {
+  const [location, setLocation] = useState("");
+  const [coordinates, setCoordinates] = useState<{ lat: number; lng: number } | null>(null);
+  const router = useRouter();
+  interface CartItem {
+    id: number;
+    price: number;
+    quantity: number;
+    image_url: string;
+    name: string;
+    total: number;
+  }
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [Loading, setLoading] = useState(true);
+  const [deliveryMethod, setDeliveryMethod] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("");
+
+  useEffect(() => {
+    // Fetch cart items from the API
+    const fetchCartItems = async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+        const user_id = 17;
+        const response = await fetch(`${baseUrl}cartItems/${user_id}/`);
+        if (response.ok) {
+          const result = await response.json();
+          const items = result.cart[0].items;
+          
+          // Fetch listing data for each cart item
+          const listingPromises = items.map(async (item: any) => {
+            const listingResponse = await fetch(`${baseUrl}listings/${item.listing_id}/`);
+            if (listingResponse.ok) {
+              const listingData = await listingResponse.json();
+              return {
+                ...item,
+                image_url: listingData.image_url, // Assuming 'image' is the field in the listing data
+                name: listingData.title,   // Assuming 'name' is the field in the listing data
+                total: item.quantity * item.price,
+              };
+            } else {
+              console.error("Failed to fetch listing data");
+              return item;
+            }
+          });
+
+          const updatedCartItems = await Promise.all(listingPromises);
+          setCartItems(updatedCartItems);
+        } else {
+          console.error("Failed to fetch cart items");
+        }
+      } catch (error) {
+        console.error("Error fetching cart items:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCartItems();
+  }, []);
+
 
   useEffect(() => {
     setTimeout(() => {
       setLoading(false);
     }, 3000);
   }, []);
+
+  
+  const handleLocationChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLocation = e.target.value;
+    setLocation(newLocation);
+    
+    // Get coordinates for the new location
+    if (newLocation) {
+      const geocodingUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(newLocation)}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAP_API_KEY}`;
+      
+      try {
+        const response = await axios.get(geocodingUrl);
+        if (response.data.status === "OK") {
+          const { lat, lng } = response.data.results[0].geometry.location;
+          setCoordinates({ lat, lng });
+        } else {
+          console.error("Geocoding error:", response.data.status);
+        }
+      } catch (error) {
+        console.error("Error fetching geocoding data:", error);
+      }
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+      const orderData = {
+        user_id: 17, // Replace with the actual user ID
+        delivery_method: deliveryMethod,
+        payment_method: paymentMethod,
+        address:location,
+      };
+
+      const response = await fetch(`${baseUrl}orders/create/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("Order created successfully:", result);
+        <SuccessMessage message="Order Placed Successfully" />
+        // Optionally, redirect to a success page or clear the cart
+        router.push('/listings')
+      } else {
+        console.error("Failed to create order");
+      }
+    } catch (error) {
+      console.error("Error creating order:", error);
+    }
+  };
 
   return (
     <html lang="en">
@@ -21,7 +138,9 @@ const Checkout: React.FC = () => {
         {/* 0Spinner Start  */}
         {Loading && <SpinnerComponent />}
         {/* Spinner End  */}
-
+        {/* Success Message Start */}
+        
+        {/* Success Message End */}
         {/* Navbar start and Modal Search Start  */}
         <Navbar />
         {/* Navbar End and Modal Search End */}
@@ -38,106 +157,53 @@ const Checkout: React.FC = () => {
             <h1 className="mb-4">Billing details</h1>
             <form action="#">
               <div className="row g-5">
-                <div className="col-md-12 col-lg-6 col-xl-7">
-                  <div className="row">
-                    <div className="col-md-12 col-lg-6">
-                      <div className="form-item w-100">
-                        <label className="form-label my-3">
-                          First Name<sup>*</sup>
-                        </label>
-                        <input type="text" className="form-control" />
-                      </div>
-                    </div>
-                    <div className="col-md-12 col-lg-6">
-                      <div className="form-item w-100">
-                        <label className="form-label my-3">
-                          Last Name<sup>*</sup>
-                        </label>
-                        <input type="text" className="form-control" />
-                      </div>
-                    </div>
+                <div className="col-md-12 col-lg-6 col-xl-7"> 
+                <div className="form-item">
+                    <label className="form-label my-3">
+                      Delivery Method <sup>*</sup>
+                    </label>
+                    <select 
+                      value={deliveryMethod} 
+                      onChange={(e) => setDeliveryMethod(e.target.value)} 
+                      className="form-control"
+                    >
+                      <option value="">Select Delivery Method</option>
+                      <option value="standard">Standard Delivery - $3.00</option>
+                      <option value="express">Express Delivery - $5.00</option>
+                    </select>
                   </div>
                   <div className="form-item">
                     <label className="form-label my-3">
-                      Company Name<sup>*</sup>
+                      Payment Method <sup>*</sup>
                     </label>
-                    <input type="text" className="form-control" />
-                  </div>
+                    <select 
+                      value={paymentMethod} 
+                      onChange={(e) => setPaymentMethod(e.target.value)} 
+                      className="form-control"
+                    >
+                      <option value="">Select Payment Method</option>
+                      <option value="cash">Cash</option>
+                      <option value="momo">Mobile</option>
+                    </select>
+                  </div>                 
                   <div className="form-item">
                     <label className="form-label my-3">
                       Address <sup>*</sup>
                     </label>
                     <input
                       type="text"
+                      value={location}
+                      onChange={handleLocationChange}
                       className="form-control"
-                      placeholder="House Number Street Name"
+                      placeholder="Enter Your Location"
                     />
                   </div>
-                  <div className="form-item">
-                    <label className="form-label my-3">
-                      Town/City<sup>*</sup>
-                    </label>
-                    <input type="text" className="form-control" />
-                  </div>
-                  <div className="form-item">
-                    <label className="form-label my-3">
-                      Country<sup>*</sup>
-                    </label>
-                    <input type="text" className="form-control" />
-                  </div>
-                  <div className="form-item">
-                    <label className="form-label my-3">
-                      Postcode/Zip<sup>*</sup>
-                    </label>
-                    <input type="text" className="form-control" />
-                  </div>
-                  <div className="form-item">
-                    <label className="form-label my-3">
-                      Mobile<sup>*</sup>
-                    </label>
-                    <input type="tel" className="form-control" />
-                  </div>
-                  <div className="form-item">
-                    <label className="form-label my-3">
-                      Email Address<sup>*</sup>
-                    </label>
-                    <input type="email" className="form-control" />
-                  </div>
-                  <div className="form-check my-3">
-                    <input
-                      type="checkbox"
-                      className="form-check-input"
-                      id="Account-1"
-                      name="Accounts"
-                      value="Accounts"
-                    />
-                    <label className="form-check-label" htmlFor="Account-1">
-                      Create an account?
-                    </label>
-                  </div>
+                
                   <hr />
-                  <div className="form-check my-3">
-                    <input
-                      className="form-check-input"
-                      type="checkbox"
-                      id="Address-1"
-                      name="Address"
-                      value="Address"
-                    />
-                    <label className="form-check-label" htmlFor="Address-1">
-                      Ship to a different address?
-                    </label>
-                  </div>
-                  <div className="form-item">
-                    <textarea
-                      name="text"
-                      className="form-control"
-                      spellCheck="false"
-                      cols={30}
-                      rows={11}
-                      placeholder="Oreder Notes (Optional)"
-                    ></textarea>
-                  </div>
+                  <div className="relative mb-4">
+                  <GoogleMapComponent coordinates={coordinates} />
+                </div>
+                
                 </div>
                 <div className="col-md-12 col-lg-6 col-xl-5">
                   <div className="table-responsive">
@@ -152,220 +218,32 @@ const Checkout: React.FC = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        <tr>
+                        {cartItems.map((item) => (
+                        <tr key={item.id}>
                           <th scope="row">
                             <div className="d-flex align-items-center mt-2">
                               <img
-                                src="/assets/img/vegetable-item-2.jpg"
+                                src={item.image_url}
                                 className="img-fluid rounded-circle"
                                 style={{ width: "90px", height: "90px" }}
-                                alt=""
+                                alt={item.name}
                               />
                             </div>
                           </th>
-                          <td className="py-5">Awesome Brocoli</td>
-                          <td className="py-5">$69.00</td>
-                          <td className="py-5">2</td>
-                          <td className="py-5">$138.00</td>
+                          <td className="py-5">{item.name}</td>
+                          <td className="py-5">${item.price}</td>
+                          <td className="py-5">{item.quantity}</td>
+                          <td className="py-5">${item.total}</td>
                         </tr>
-                        <tr>
-                          <th scope="row">
-                            <div className="d-flex align-items-center mt-2">
-                              <img
-                                src="/assets/img/vegetable-item-5.jpg"
-                                className="img-fluid rounded-circle"
-                                style={{ width: "90px", height: "90px" }}
-                                alt=""
-                              />
-                            </div>
-                          </th>
-                          <td className="py-5">Potatoes</td>
-                          <td className="py-5">$69.00</td>
-                          <td className="py-5">2</td>
-                          <td className="py-5">$138.00</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">
-                            <div className="d-flex align-items-center mt-2">
-                              <img
-                                src="/assets/img/vegetable-item-3.png"
-                                className="img-fluid rounded-circle"
-                                style={{ width: "90px", height: "90px" }}
-                                alt=""
-                              />
-                            </div>
-                          </th>
-                          <td className="py-5">Big Banana</td>
-                          <td className="py-5">$69.00</td>
-                          <td className="py-5">2</td>
-                          <td className="py-5">$138.00</td>
-                        </tr>
-                        <tr>
-                          <th scope="row"></th>
-                          <td className="py-5"></td>
-                          <td className="py-5"></td>
-                          <td className="py-5">
-                            <p className="mb-0 text-dark py-3">Subtotal</p>
-                          </td>
-                          <td className="py-5">
-                            <div className="py-3 border-bottom border-top">
-                              <p className="mb-0 text-dark">$414.00</p>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row"></th>
-                          <td className="py-5">
-                            <p className="mb-0 text-dark py-4">Shipping</p>
-                          </td>
-                          <td colSpan={3} className="py-5">
-                            <div className="form-check text-start">
-                              <input
-                                type="checkbox"
-                                className="form-check-input bg-primary border-0"
-                                id="Shipping-1"
-                                name="Shipping-1"
-                                value="Shipping"
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="Shipping-1"
-                              >
-                                Free Shipping
-                              </label>
-                            </div>
-                            <div className="form-check text-start">
-                              <input
-                                type="checkbox"
-                                className="form-check-input bg-primary border-0"
-                                id="Shipping-2"
-                                name="Shipping-1"
-                                value="Shipping"
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="Shipping-2"
-                              >
-                                Flat rate: $15.00
-                              </label>
-                            </div>
-                            <div className="form-check text-start">
-                              <input
-                                type="checkbox"
-                                className="form-check-input bg-primary border-0"
-                                id="Shipping-3"
-                                name="Shipping-1"
-                                value="Shipping"
-                              />
-                              <label
-                                className="form-check-label"
-                                htmlFor="Shipping-3"
-                              >
-                                Local Pickup: $8.00
-                              </label>
-                            </div>
-                          </td>
-                        </tr>
-                        <tr>
-                          <th scope="row"></th>
-                          <td className="py-5">
-                            <p className="mb-0 text-dark text-uppercase py-3">
-                              TOTAL
-                            </p>
-                          </td>
-                          <td className="py-5"></td>
-                          <td className="py-5"></td>
-                          <td className="py-5">
-                            <div className="py-3 border-bottom border-top">
-                              <p className="mb-0 text-dark">$135.00</p>
-                            </div>
-                          </td>
-                        </tr>
+                         )) }
                       </tbody>
                     </table>
                   </div>
-                  <div className="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                    <div className="col-12">
-                      <div className="form-check text-start my-3">
-                        <input
-                          type="checkbox"
-                          className="form-check-input bg-primary border-0"
-                          id="Transfer-1"
-                          name="Transfer"
-                          value="Transfer"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="Transfer-1"
-                        >
-                          Direct Bank Transfer
-                        </label>
-                      </div>
-                      <p className="text-start text-dark">
-                        Make your payment directly into our bank account. Please
-                        use your Order ID as the payment reference. Your order
-                        will not be shipped until the funds have cleared in our
-                        account.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                    <div className="col-12">
-                      <div className="form-check text-start my-3">
-                        <input
-                          type="checkbox"
-                          className="form-check-input bg-primary border-0"
-                          id="Payments-1"
-                          name="Payments"
-                          value="Payments"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="Payments-1"
-                        >
-                          Check Payments
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                    <div className="col-12">
-                      <div className="form-check text-start my-3">
-                        <input
-                          type="checkbox"
-                          className="form-check-input bg-primary border-0"
-                          id="Delivery-1"
-                          name="Delivery"
-                          value="Delivery"
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="Delivery-1"
-                        >
-                          Cash On Delivery
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="row g-4 text-center align-items-center justify-content-center border-bottom py-3">
-                    <div className="col-12">
-                      <div className="form-check text-start my-3">
-                        <input
-                          type="checkbox"
-                          className="form-check-input bg-primary border-0"
-                          id="Paypal-1"
-                          name="Paypal"
-                          value="Paypal"
-                        />
-                        <label className="form-check-label" htmlFor="Paypal-1">
-                          Paypal
-                        </label>
-                      </div>
-                    </div>
-                  </div>
+              
                   <div className="row g-4 text-center align-items-center justify-content-center pt-4">
                     <button
                       type="button"
+                      onClick={handlePlaceOrder}
                       className="btn border-secondary py-3 px-4 text-uppercase w-100 text-primary"
                     >
                       Place Order

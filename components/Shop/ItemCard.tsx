@@ -9,8 +9,8 @@ interface ListingCardProps {
 
 const ItemCard: React.FC<ListingCardProps> = ({ item }) => {
   return (
-    <div className="col-md-6 col-lg-6 col-xl-3 shadow-lg">
-      <div className="text-center">
+    <div className="card shadow-lg fruite-item">
+      <div className="text-center fruite-img">
         <Image
           src={item.image_url}
           alt="product-image"
