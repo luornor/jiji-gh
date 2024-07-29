@@ -48,7 +48,7 @@ const ListingCard: React.FC<ListingCardProps> = ({ item }) => {
   };
 
   return (
-    <div className="col-md-6 col-lg-4 col-xl-3">
+    <div className="">
       <div className="rounded position-relative fruite-item">
         <div className="fruite-img">
           {item.image_url ? (

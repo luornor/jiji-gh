@@ -13,7 +13,7 @@ import Link from "next/link";
 const ListingsPage: React.FC = () => {
   const [Loading, setLoading] = useState(true);
   const [domLoad, setDomLoad] = useState(false);
-  const [listings, setListings] = useState<any>([]);
+  const [listings, setListings] = useState<Listing[]>([]);
   const { data, error, isLoading } = useGetAllListingsQuery();
 
   useEffect(() => {
@@ -35,84 +35,51 @@ const ListingsPage: React.FC = () => {
   return (
     <>
       {domLoad && (
-        <html lang="en">
+        <>
           <Header />
-          <body>
-            {/* 0Spinner Start  */}
-            {Loading && <SpinnerComponent />}
-            {/* Spinner End  */}
-
-            {/* Navbar start and Modal Search Start  */}
-            <Navbar />
-            {/* Navbar End and Modal Search End */}
-
-            {/* <!-- Single Page Header start --> */}
-            <div className="container-fluid page-header py-5">
-              <h1 className="text-center text-white display-6">
-                Products We Have
-              </h1>
-            </div>
-            {/* <!-- Single Page Header End --> */}
-
-            {/* <!-- Fruits Shop Start--> */}
-            <div className="container-fluid fruite py-5">
-              <div className="container py-5">
-                <h1 className="mb-4">Quality items at Your Display</h1>
-                <div className="row g-4">
-                  <div className="col-lg-12">
-                    <div className="row g-4">
-                      <div className="col-xl-3">
-                        <div className="input-group w-100 mx-auto d-flex">
-                          <input
-                            type="search"
-                            className="form-control p-3"
-                            placeholder="keywords"
-                            aria-describedby="search-icon-1"
-                          />
-                          <span
-                            id="search-icon-1"
-                            className="input-group-text p-3"
-                          >
-                            <i className="fa fa-search"></i>
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row g-4 flex">
-                       {/* Listing cards start */}
-                       <div className="d-flex flex-wrap justify-content-start gap-4">
-                        {/* single card start */}
-                        {isLoading ? (
-                          <div>Loading...</div>
-                        ) : error ? (
-                          <ErrorMessage message="Error fetching listings" />
-                        ) : (
-                          <>
-                            {listings.map((listing: Listing) => (
-                              <Link
-                                key={listing.id}
-                                href={`/listings/${listing.id}`}
-                              >
-                                <ListingCard key={listing.id} item={listing} />
-                              </Link>
-                            ))}
-                          </>
-                        )}
-                        {/* single card end */}
-                      </div>
-                    </div>
-                    {/* Listing cards end */}
+          <Navbar />
+          <div className="container-fluid page-header py-5">
+            <h1 className="text-center text-white display-6">Products We Have</h1>
+          </div>
+          <div className="container-fluid fruite py-5">
+            <div className="container py-5">
+              <h1 className="mb-4">Quality items at Your Display</h1>
+              <div className="row g-4 mb-10">
+                <div className="col-xl-3">
+                  <div className="input-group w-100 mx-auto d-flex ">
+                    <input
+                      type="search"
+                      className="form-control p-3"
+                      placeholder="keywords"
+                      aria-describedby="search-icon-1"
+                    />
+                    <span id="search-icon-1" className="input-group-text p-3">
+                      <i className="fa fa-search"></i>
+                    </span>
                   </div>
                 </div>
               </div>
+              <div className="row g-4">
+                {isLoading ? (
+                  <div>Loading...</div>
+                ) : error ? (
+                  <ErrorMessage message="Error fetching listings" />
+                ) : (
+                  <>
+                    {listings.map((listing: Listing) => (
+                      <div key={listing.id} className="col-md-6 col-lg-4 col-xl-3">
+                      <Link key={listing.id} href={`/listings/${listing.id}`}>
+                        <ListingCard key={listing.id} item={listing} />
+                      </Link>
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
             </div>
-            {/* <!-- Fruits Shop End--> */}
-
-            {/* Footer start */}
-            <Footer />
-            {/* footer end */}
-          </body>
-        </html>
+          </div>
+          <Footer />
+        </>
       )}
     </>
   );
