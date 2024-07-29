@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Project
 
-## Getting Started
+This is a Next.js project that provides a server-side rendered React application.
 
-First, run the development server:
+## Table of Contents
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running the Project](#running-the-project)
+- [Building for Production](#building-for-production)
+- [Running the Tests](#running-the-tests)
+- [Additional Information](#additional-information)
+- [License](#license)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Requirements
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- Node.js 12.x or higher
+- npm 6.x or higher (or yarn 1.22.x or higher)
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+## Installation
 
-## Learn More
+1. **Clone the repository:**
 
-To learn more about Next.js, take a look at the following resources:
+   git clone https://github.com/luornor/jiji-gh.git
+   cd jiji-gh
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Install the dependencies:**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+   npm install
+   # or
+   yarn install
 
-## Deploy on Vercel
+## Configuration
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Environment Variables:**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+   Create a `.env.local` file in the project root and add the necessary environment variables:
+
+   NEXT_PUBLIC_BASE_URL=https://api.example.com
+   NEXT_PUBLIC_API_KEY=your_api_key
+   
+
+## Running the Project
+
+1. **Start the development server:**
+
+   npm run dev
+   # or
+   yarn dev
+
+   The application will be available at `http://localhost:3000`.
+
+## Building for Production
+
+1. **Build the project:**
+
+   npm run build
+   # or
+   yarn build
+
+2. **Start the production server:**
+
+   npm start
+   # or
+   yarn start
+
+   The application will be available at `http://localhost:3000`.
+
+## Running the Tests
+
+1. **Run the tests:**
+
+   ```bash
+   npm test
+   # or
+   yarn test
+   ```
+
+## Additional Information
+
+- **Linting:**
+
+  Run the linter to check for code quality issues:
+
+  npm run lint
+  # or
+  yarn lint
+
+- **Formatting:**
+
+  Run the formatter to automatically fix code style issues:
+
+  npm run format
+  # or
+  yarn format
+
+## License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
+
+Feel free to customize this template according to your project's specific requirements and details.
